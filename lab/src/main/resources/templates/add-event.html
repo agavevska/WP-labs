@@ -1,0 +1,65 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Add Event</title>
+    <style type="text/css">
+        body {
+            width: 800px;
+            margin: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, td, th {
+            border: 1px solid black;
+            padding: 3px 2px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Add Event</h1>
+    </header>
+    <form th:action="@{'/events/add'}" method="post">
+    <input id="id" type="hidden" name="eventId"
+           th:value="(${event} != null ? ${event.getId()} : '')">
+        <label for="name">
+            Event name:
+            <input type="text" id="name"
+                th:value="(${event} != null ? ${event.getName()} : '')"
+                th:name="name">
+        </label><br>
+        <label for="description">
+            Event description:
+            <input type="text" id="description"
+                th:value="(${event} != null ? ${event.getDescription()} : '')"
+                th:name="description">
+        </label><br>
+        <label for="popularityScore">
+            Event popularity score:
+            <input type="text" id="popularityScore"
+                th:value="(${event} != null ? ${event.getPopularityScore()} : '')"
+                th:name="popularityScore">
+        </label><br>
+        <label for="location">
+            Select event location </label><br>
+        <label for="location">Location:</label>
+        <select id="location" th:name="location">
+            <option value="" disabled selected>Select a location</option>
+
+            <option th:each="loc : ${locations}"
+                    th:value="${loc?.id}"
+                    th:text="${loc?.name}"
+                    th:selected="${event != null && loc?.id == event?.getLocation()?.id}">
+            </option>
+        </select>
+        <br>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

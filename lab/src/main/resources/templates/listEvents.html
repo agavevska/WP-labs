@@ -1,0 +1,89 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Event Booking page - Welcome and choose an Event</title>
+    <style type="text/css">
+        body {
+            width: 800px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Welcome to our Event Booking App</h1>
+</header>
+<main>
+    <h2>Search an event:</h2>
+    <form th:method="GET" th:action="@{/events}">
+        <label for="search">By Event Name:</label>
+        <input type="text" name="searchName" id="search" placeholder="Search an event">
+        <br/>
+        <label for="minRating">By Minimum Event Rating (0.00 - 10.00): </label>
+        <input type="number" name="minRating" id="minRating" min="0" max="10" placeholder="Min Rating">
+        <br/>
+        <label for="search">By Event Location:</label>
+        <select id="location" th:name="locationId">
+            <option value="" disabled selected>Select a location</option>
+
+            <option th:each="loc : ${locations}"
+                    th:value="${loc?.id}"
+                    th:text="${loc?.name}"
+                    th:selected="${event != null && loc?.id == event?.getLocation()?.id}">
+            </option>
+        </select>
+        <input type="submit" value="Submit">
+    </form>
+
+    <h2>Choose an event:</h2>
+    <form th:action="@{/eventBooking}" method="POST">
+        <div id="eventList">
+            <div th:each="event : ${events}">
+                <label>
+                    <input type="radio" name="eventName" th:value="${event.name}">
+                    Name: <span th:text="${event.name}"></span><br/>
+                    Description: <span th:text="${event.description}"></span><br/>
+                    Rating: <span th:text="${event.popularityScore}"></span><br/>
+                    Location: <span th:text="${event.location.name}"></span><br/>
+
+                    <a th:href="@{'/events/edit/{id}' (id=${event.getId()})}">
+                        <button type="button">Edit</button>
+                    </a>
+                    <a th:href="@{'/events/delete/{id}' (id=${event.getId()})}">
+                        <button type="button">Delete</button>
+                    </a>
+                    <a th:href="@{'/events/update-rating/' + ${event.getId()} + '/1'}">
+                        <button type="button" th:disabled="${event.ratingUpdated}">Increase</button>
+                    </a>
+                    <a th:href="@{'/events/update-rating/' + ${event.getId()} + '/-1'}">
+                        <button type="button" th:disabled="${event.ratingUpdated}">Decrease</button>
+                    </a>
+
+                    <!--                    <a th:href="@{'/books/clone/{id}' (id=${book.getId()})}">-->
+<!--                        <button type="button">Clone</button>-->
+<!--                    </a>-->
+    <!--                    <a th:href="@{'/books/review?id=' + ${book.getId()}}">-->
+    <!--                        <button type="button">Add Review</button>-->
+    <!--                    </a>-->
+                </label>
+                <br/>
+                <br/>
+            </div>
+        </div>
+
+        <h2>Choose number of tickets:</h2>
+        <input type="number" name="numTickets" min="1" max="10"><br/>
+        <button type="submit">Submit</button>
+        <br>
+
+        <a th:href="@{'/events/add-form'}">
+            <button type="button">Add event</button>
+        </a>
+    </form>
+    <br>
+</main>
+</body>
+</html>
