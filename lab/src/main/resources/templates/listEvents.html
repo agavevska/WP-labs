@@ -1,5 +1,5 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +36,18 @@
             </option>
         </select>
         <input type="submit" value="Submit">
+        <br/>
+
+        <th:block sec:authorize="isAuthenticated()">
+            <p>Welcome, <span th:text="${#authentication.name}"></span>!</p>
+        </th:block>
+
+        <th:block sec:authorize="!isAuthenticated()">
+            <a href="/login">
+                <button type="button">Login</button>
+            </a>
+        </th:block>
+        <br/>
     </form>
 
     <h2>Choose an event:</h2>
@@ -49,39 +61,35 @@
                     Rating: <span th:text="${event.popularityScore}"></span><br/>
                     Location: <span th:text="${event.location.name}"></span><br/>
 
-                    <a th:href="@{'/events/edit/{id}' (id=${event.getId()})}">
-                        <button type="button">Edit</button>
-                    </a>
-                    <a th:href="@{'/events/delete/{id}' (id=${event.getId()})}">
-                        <button type="button">Delete</button>
-                    </a>
+                    <a th:block sec:authorize="hasRole('ROLE_ADMIN')"
+                       th:href="@{'events/edit/{id}' (id=${event.id})}" class="btn btn-warning">Edit</a>
+
+                    <a th:block sec:authorize="hasRole('ROLE_ADMIN')"
+                       th:href="@{'events/delete/{id}' (id=${event.id})}" class="btn btn-danger">Delete</a>
+
                     <a th:href="@{'/events/update-rating/' + ${event.getId()} + '/1'}">
                         <button type="button" th:disabled="${event.ratingUpdated}">Increase</button>
                     </a>
                     <a th:href="@{'/events/update-rating/' + ${event.getId()} + '/-1'}">
                         <button type="button" th:disabled="${event.ratingUpdated}">Decrease</button>
                     </a>
-
-                    <!--                    <a th:href="@{'/books/clone/{id}' (id=${book.getId()})}">-->
-<!--                        <button type="button">Clone</button>-->
-<!--                    </a>-->
-    <!--                    <a th:href="@{'/books/review?id=' + ${book.getId()}}">-->
-    <!--                        <button type="button">Add Review</button>-->
-    <!--                    </a>-->
                 </label>
                 <br/>
                 <br/>
             </div>
         </div>
+        <th:block sec:authorize="isAuthenticated()">
+            <h2>Choose number of tickets:</h2>
+            <input type="number" name="numTickets" min="1" max="10"><br/>
+            <button type="submit">Submit</button>
+            <br/>
+        </th:block>
 
-        <h2>Choose number of tickets:</h2>
-        <input type="number" name="numTickets" min="1" max="10"><br/>
-        <button type="submit">Submit</button>
-        <br>
-
-        <a th:href="@{'/events/add-form'}">
-            <button type="button">Add event</button>
-        </a>
+        <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{'/events/add-form'}">
+                <button type="button">Add event</button>
+            </a>
+        </th:block>
     </form>
     <br>
 </main>

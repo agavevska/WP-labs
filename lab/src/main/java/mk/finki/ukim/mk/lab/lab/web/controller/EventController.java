@@ -5,6 +5,7 @@ import mk.finki.ukim.mk.lab.lab.model.Event;
 import mk.finki.ukim.mk.lab.lab.model.Location;
 import mk.finki.ukim.mk.lab.lab.service.EventService;
 import mk.finki.ukim.mk.lab.lab.service.LocationService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ import java.util.List;
 
 
 @Controller
-@RequestMapping("/events")
+@RequestMapping({"/events", "/"})
 public class EventController {
     private final EventService eventService;
     private final LocationService locationService;
@@ -25,6 +26,7 @@ public class EventController {
         this.eventService = eventService;
         this.locationService = locationService;
     }
+
     @GetMapping
     public String getEventsPage(@RequestParam(required = false) String searchName,
                                 @RequestParam(required = false, defaultValue = "0") Integer minRating,
@@ -41,10 +43,10 @@ public class EventController {
         return "listEvents";
     }
 
-
-
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteEvent(@PathVariable Long id){
+
         this.eventService.deleteById(id);
         return "redirect:/events";
     }
@@ -52,7 +54,8 @@ public class EventController {
     public String getAddEvent(Model model){
         List<Location> locationList = locationService.getAll();
         model.addAttribute("locations", locationList);
-        return "add-event";
+        model.addAttribute("bodyContent", "add-event");
+        return "master-template";
     }
 
     @PostMapping("/add")
@@ -71,15 +74,20 @@ public class EventController {
     }
 
     @GetMapping("/edit/{eventId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editEvent(@PathVariable Long eventId, Model model){
         Event event = eventService.listAll().stream().filter(i -> i.getId().equals(eventId)).findFirst().orElse(null);
-        model.addAttribute("event", event);
         List<Location> locationList = locationService.getAll();
+        System.out.println(event);
+        model.addAttribute("event", event);
         model.addAttribute("locations", locationList);
-        return "add-event";
+        System.out.println("edit called");
+        model.addAttribute("bodyContent", "add-event");
+        return "master-template";
     }
 
     @GetMapping("/update-rating/{eventId}/{value}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String updateRating(@PathVariable Long eventId, @PathVariable int value) {
         try {
             eventService.updateRating(eventId, value);

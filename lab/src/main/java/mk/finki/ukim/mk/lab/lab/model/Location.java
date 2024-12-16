@@ -18,7 +18,7 @@ public class Location {
     private String capacity;
     private String description;
 
-    @OneToMany(mappedBy = "location")
+    @OneToMany
     List<Event>events;
 
     public Location() {

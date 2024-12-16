@@ -10,6 +10,8 @@ import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 @Repository
@@ -57,17 +59,21 @@ public class EventRepository{
         return event;
     }
 
-//    public void updateRating(Long eventId, int value){
-//        Event event = findById(eventId);
-//        if (event != null && !event.isRatingUpdated()) {
-//            double newPopularityScore = event.getPopularityScore() + value;
-//
-//            if (newPopularityScore >= 0 && newPopularityScore <= 10) {
-//                event.setPopularityScore(newPopularityScore);
-//                event.setRatingUpdated(true);
-//                DataHolder.events.remove(event);
-//                DataHolder.events.add(event);
-//            }
-//        }
-//    }
+    public void updateRating(Long eventId, int value){
+        Event event = findById(eventId);
+        if (event != null && !event.isRatingUpdated()) {
+            double newPopularityScore = event.getPopularityScore() + value;
+
+            if (newPopularityScore >= 0 && newPopularityScore <= 10) {
+                event.setPopularityScore(newPopularityScore);
+                event.setRatingUpdated(true);
+                DataHolder.events.remove(event);
+                DataHolder.events.add(event);
+            }
+        }
+    }
+
+    public List<Event> findAllEventsByLocation_Id(Long locationId) {
+         return DataHolder.events.stream().filter(event -> event.getLocation().getId().equals(locationId)).toList();
+    }
 }

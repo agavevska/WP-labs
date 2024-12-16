@@ -22,9 +22,12 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    private User user;
+
 
     public Event(String name, String description, double popularityScore, Location location) {
-        //this.id = new Random().nextLong();
+        this.id = new Random().nextLong();
         this.name = name;
         this.description = description;
         this.popularityScore = popularityScore;
